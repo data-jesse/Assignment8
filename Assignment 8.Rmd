@@ -1,0 +1,113 @@
+---
+title: "Assignment 8"
+author: "Jesse Y"
+date: "2025-04-05"
+output:
+  distill::distill_article:
+    self_contained: true
+    theme: cerulean
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
+bibliography: references.bib
+link-citations: true
+---
+
+# Introduction
+
+This assignment revisits a previous analysis of mentally unhealthy days using the Diabetes Health Indicators dataset. In Assignment 6, we used count data models to assess how health and lifestyle factors such as high blood pressure, age, and physical activity impact mental health. Here, we improve the presentation by integrating formal model summaries, well-structured tables, and proper citations using the **`modelsummary`** and **`tinytable`** packages.
+
+# Load Packages and Prepare Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+library(tidyverse)
+library(janitor)
+library(modelsummary)
+library(tinytable)
+```
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+# Load and clean data
+diabetes <- read_csv("Diabetes Health Indicators.csv") |> clean_names()
+
+# Subset and format relevant variables
+diabetes_model <- diabetes |>
+  dplyr::select(ment_hlth, high_bp, age, phys_activity) |>
+  drop_na() |>
+  mutate(
+    high_bp = factor(high_bp, labels = c("No", "Yes")),
+    phys_activity = factor(phys_activity, labels = c("No", "Yes")),
+    age = as.numeric(age)
+  )
+```
+
+# Summary Table of Key Variables
+
+Below is a summary of key variables used in the analysis, including mentally unhealthy days and primary predictors
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+datasummary_skim(diabetes_model)
+```
+
+# Distribution of Mentally Unhealthy Days
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+ggplot(diabetes_model, aes(x = ment_hlth)) +
+  geom_histogram(binwidth = 1, fill = "cadetblue") +
+  labs(
+    title = "Distribution of Mentally Unhealthy Days",
+    x = "Days", y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+# Count Models
+
+We estimate both Poisson and Negative Binomial models to account for overdispersion in the count outcome.
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+# Poisson model
+poisson_model <- glm(ment_hlth ~ high_bp + age + phys_activity,
+                     family = poisson(link = "log"),
+                     data = diabetes_model)
+
+# Negative Binomial model
+nb_model <- MASS::glm.nb(ment_hlth ~ high_bp + age + phys_activity,
+                         data = diabetes_model)
+```
+
+# Model Results Table
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+models <- list(
+  "Poisson" = poisson_model,
+  "Negative Binomial" = nb_model
+)
+
+modelsummary(models,
+             output = "markdown",
+             stars = TRUE,
+             statistic = "std.error",
+             gof_omit = "IC|Log|RMSE")
+```
+
+Standard errors are shown in parentheses. Significance levels are marked with stars.
+
+# Key Findings and Interpretation
+
+-   Physical activity is associated with significantly fewer mentally unhealthy days, across both models.
+
+-   High blood pressure predicts more unhealthy days.
+
+-   Age has a small but statistically significant negative relationship, suggesting fewer mentally unhealthy days as age increases, although this may reflect differences in perception or reporting.
+
+-   The Negative Binomial model is better suited here due to evidence of overdispersion, confirmed in Assignment 6.
+
+# Conclusion
+
+This assignment improved upon earlier work by using reproducible workflows to render clean summary statistics and model output tables. These tools, especially **`modelsummary`** and **`tinytable`**, enhance the clarity and interpretability of results in applied health research. By leveraging simulation-ready output and automated table generation, this workflow promotes transparency and consistency in applied health analytics.
+
+# References
+
+[@teboul2023]
