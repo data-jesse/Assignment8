@@ -14,7 +14,6 @@ Assignment 8 emphasizes **clear presentation**, **citation practices**, and the 
 ## Files in This Repository
 
 - `Assignment 8.Rmd`: The R Markdown document containing the full analysis.
-- `Assignment 8.html`: The rendered report in HTML format using `distill::distill_article`.
 - `Diabetes Health Indicators.csv`: The dataset used for the analysis (original from Kaggle).
 - `references.bib`: The bibliography file generated with Zotero and used for in-text citations.
 - `README.md`: This file.
