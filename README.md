@@ -15,7 +15,6 @@ Assignment 8 emphasizes **clear presentation**, **citation practices**, and the 
 
 - `Assignment 8.Rmd`: The R Markdown document containing the full analysis.
 - `Diabetes Health Indicators.csv`: The dataset used for the analysis (original from Kaggle).
-- `references.bib`: The bibliography file generated with Zotero and used for in-text citations.
 - `README.md`: This file.
 
 ## Key Methods
